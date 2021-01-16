@@ -10,17 +10,14 @@ Automated-BERT-Regularization
   │ 
   ├── src
   │    │     
-  │    ├── finetuned_models
-  │    │     └── mrpc_original: BERT finetuned on MRPC (for demo)
+  │    ├── finetuned_models: BERT finetuned on downstream tasks
   │    │      
   │    ├── lib
   │    │     ├── agent.py: code for agent
   │    │     ├── memory.py: code for memory
   │    │     └── reward.py: code for reward
   │    │  
-  │    ├── script
-  │    │     ├── MRPC_train_split.sh: script for training a pruned BERT on MRPC (for demo)
-  │    │     └── MRPC_eval_split.sh: script for evaluating a pruned BERT on MRPC (for demo)
+  │    ├── script: script for training and evaluating a pruned BERT on downstream tasks
   │    │ 
   │    ├─── utils
   │    │     ├── default_param.py: default cfgs
@@ -38,12 +35,12 @@ Automated-BERT-Regularization
 ```
 
 #### Data description
-* MRPC: Microsoft Research Paraphrase Corpus
-* Note:
-    * Other GLUE datasets can be downloaded from https://github.com/nyu-mll/GLUE-baselines
-    * In each dataset directory, there should be two folders, `train` and `dev`.
-    In `dev`, there should be a copy of train and dev datasets.
-    In `train`, there should be two copies of the train dataset, one named as `train.tsv` and the other named as `dev.tsv`.
+* GLUE datasets with `train.tsv` and `dev.tsv` can be downloaded from https://github.com/nyu-mll/GLUE-baselines
+* In each dataset directory, there should be two folders, `train` and `dev`.
+    * `dev/dev.tsv`: original `dev.tsv` for evaluating the performance of AUBER
+    * `dev/train.tsv`: mini-training set
+    * `train/dev.tsv`: mini-dev set
+    * `train/train.tsv`: original `train.tsv` to get the finetuned model
 
 #### Output
 * Trained models will be saved in `src/trained_models/[MODEL_NAME]_[TASK_NAME]_[LAYER_NUMBER]` after training.
@@ -64,22 +61,42 @@ Automated-BERT-Regularization
 
 ## How to use 
 #### Clone the repository
-    git clone https://monet.snu.ac.kr/gitlab/snudatalab/vet/VTT-project.git
-    cd VTT-project/Automated-BERT-Regularization/src/
-    git clone https://github.com/huggingface/transformers
-    cd transformers
-    git checkout tags/v3.5.0
-    pip install .
-    pip install -r ./examples/requirements.txt
-    mv ../run_glue.py ./examples/text-classification
-    cd ..
+```shell 
+git clone https://monet.snu.ac.kr/gitlab/snudatalab/vet/VTT-project.git
+cd VTT-project/Automated-BERT-Regularization/src/
+git clone https://github.com/huggingface/transformers
+cd transformers
+git checkout tags/v3.5.0
+pip install .
+pip install -r ./examples/requirements.txt
+cd ..
+mv ./run_glue.py ./transformers/examples/text-classification
+```
+
+#### Finetune BERT on downstream tasks
+Depending on the target downstream tasks, `TASK_NAME` can be changed.
+```shell
+export TASK_NAME=MRPC
+python transformers/examples/text-classification/run_glue.py \
+  --model_name_or_path bert-base-cased \
+  --task_name $TASK_NAME \
+  --do_train \
+  --do_eval \
+  --max_seq_length 128 \
+  --per_device_train_batch_size 32 \
+  --learning_rate 2e-5 \
+  --num_train_epochs 3.0 \
+  --output_dir ./finetuned_model/$TASK_NAME
+cd ..
+```
+
 #### DEMO
 * To train the model on the MRPC dataset, run script:
-    ```    
+    ```shell    
     cd script
     ./demo.sh
     ```
-    Intermediate models after pruning each layer will be saved in `src/trained_models/`.
+* Intermediate models after pruning each layer will be saved in `src/trained_models/`.
 
 ## Contact us
 - Hyun Dong Lee (hl2787@columbia.edu)

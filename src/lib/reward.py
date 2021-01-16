@@ -37,7 +37,7 @@ def get_reward(model,directory,dataset,do_train,eval_script,train_script,gpu_num
     #print(err)
     result = output.strip()
     result = result.decode("utf-8")
-    print(result)
+    result = result.split("\n")[-1]
 
     try:
         reward = torch.Tensor([float(result)])
