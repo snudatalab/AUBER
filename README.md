@@ -103,3 +103,18 @@ cd ..
 - Seongmin Lee (ligi214@snu.ac.kr)
 - U Kang (ukang@snu.ac.kr)
 - Data Mining Lab at Seoul National University.
+
+## Reference
+If you use this code, please cite the following paper.
+```
+@article{lee2021auber,
+  title={Auber: automated bert regularization},
+  author={Lee, Hyun Dong and Lee, Seongmin and Kang, U},
+  journal={Plos one},
+  volume={16},
+  number={6},
+  pages={e0253241},
+  year={2021},
+  publisher={Public Library of Science San Francisco, CA USA}
+}
+```
